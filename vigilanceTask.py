@@ -1,4 +1,3 @@
-# Test change
 # Import necessary libraries
 from psychopy import visual, core, event
 import random
