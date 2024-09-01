@@ -2,6 +2,10 @@
 from psychopy import visual, core, event
 import random
 import math
+
+#If we want to use random numbers:
+#import time
+#random.seed(time.gmtime())
 random.seed(0)
 
 #-------------[Creating Functions]-------------#
@@ -54,7 +58,7 @@ text = visual.TextStim(win)
 
 # setting the beginning variables
 count = 1
-max_count = 900
+max_count = 150
 
 hit_interval = 30
 count_per_interval = 1
@@ -135,6 +139,7 @@ while True:
     # putting digit and next_digit together
     new_digit = str(digit) + str(next_digit)
     text.text = str(new_digit)
+    text.color = 'white';
     text.draw()
     win.flip()
     core.wait(1)
@@ -145,10 +150,12 @@ while True:
     if keys:
         # Check if the response is correct or incorrect
         if is_correct(digit, next_digit):
-            feedback_text = "Correct"
+            feedback_text = "Correct ✓"
+            text.color = 'green',
 
         else:
-            feedback_text = "Incorrect"
+            feedback_text = "Wrong ❌"
+            text.color = 'red',
 
         # Display feedback
         text.text = feedback_text
@@ -157,8 +164,16 @@ while True:
         core.wait(1) # Display feedback for 1 second
 
     else:
-        # Display fixation cross
-        text.text = "+"
+        # Was it a correct rejection?
+        if is_correct(digit, next_digit):
+            feedback_text = "Wrong ❌"
+            text.color = 'red',
+
+        else:
+            feedback_text = "Correct ✓"
+            text.color = 'green',
+        
+        text.text = feedback_text
         text.draw()
         win.flip()
         core.wait(1)
