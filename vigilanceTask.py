@@ -38,8 +38,8 @@ max_count = 150
 
 hit_interval = 30
 
-first_index = 0;
-second_index = 15;
+first_index = 0
+second_index = 15
 
 #-------------[Main Experiment Loop]-------------#
 while count < max_count: #runs 150 times (count 0-149)
