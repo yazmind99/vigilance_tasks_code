@@ -44,7 +44,7 @@ second_index = 15
 #-------------[Main Experiment Loop]-------------#
 while count < max_count: #runs 150 times (count 0-149)
     
-    i = count % hit_interval; # Current index (0-29) in this set of 30
+    i = count % hit_interval # Current index (0-29) in this set of 30
     
     # Generate indecies every 30 numbers
     if i == 0:
@@ -76,7 +76,7 @@ while count < max_count: #runs 150 times (count 0-149)
     # putting digit and next_digit together
     new_digit = str(digit) + str(next_digit)
     text.text = str(new_digit)
-    text.color = 'white';
+    text.color = 'white'
     text.draw()
     win.flip()
     core.wait(1)
@@ -102,19 +102,18 @@ while count < max_count: #runs 150 times (count 0-149)
 
     else:
         # Was it a correct rejection?
-        '''
         if is_critical(digit, next_digit):
-            feedback_text = "Wrong ❌"
-            text.color = 'red',
+            feedback_text = "Miss ❌"
+            text.color = 'red'
 
         else:
-            feedback_text = "Correct ✓"
-            text.color = 'green',
-        '''
-        feedback_text = "+"
-        text.color = 'white'
+            feedback_text = "+"
+            text.color = 'white'
         
         text.text = feedback_text
         text.draw()
         win.flip()
         core.wait(1)
+    
+    # Clear keyList to ignore accidental key presses during the ISI
+    event.getKeys(keyList=['space'], timeStamped=True)
