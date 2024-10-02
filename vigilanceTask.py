@@ -30,7 +30,7 @@ def is_critical(digit1, digit2):
 win = visual.Window([800,600], monitor="testMonitor", units="deg")
 
 # Create text stimuli
-text = visual.TextStim(win)
+text = visual.TextStim(win, height = 3)
 
 # setting the beginning variables
 count = 0
@@ -88,7 +88,7 @@ while count < max_count: #runs 150 times (count 0-149)
         # Check if the response is correct or incorrect
         if is_critical(digit, next_digit):
             feedback_text = "Correct ✓"
-            text.color = 'green',
+            text.color = (0.5, 1, 0.5)
 
         else:
             feedback_text = "Wrong ❌"
