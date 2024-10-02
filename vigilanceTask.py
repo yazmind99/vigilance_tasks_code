@@ -88,11 +88,11 @@ while count < max_count: #runs 150 times (count 0-149)
         # Check if the response is correct or incorrect
         if is_critical(digit, next_digit):
             feedback_text = "Correct ✓"
-            text.color = (0.5, 1, 0.5)
+            text.color = '#03C04A'
 
         else:
             feedback_text = "Wrong ❌"
-            text.color = 'red',
+            text.color = '#FF0000'
 
         # Display feedback
         text.text = feedback_text
@@ -104,7 +104,7 @@ while count < max_count: #runs 150 times (count 0-149)
         # Was it a correct rejection?
         if is_critical(digit, next_digit):
             feedback_text = "Miss ❌"
-            text.color = 'red'
+            text.color = '#FF0000'
 
         else:
             feedback_text = "+"
