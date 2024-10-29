@@ -69,41 +69,19 @@ text_screen2 = visual.TextStim(win, text='Insert task details here.', height = 1
 text_screen3 = visual.TextStim(win, text='Are you ready to begin a practice run? Click "next" to begin the task.', height = 1, color='black', pos=(0,5))
 text_screen4 = visual.TextStim(win, text='You have completed the practice run, you will now complete the entire task.', height = 1, color='black', pos=(0,5))
 text_screen5 = visual.TextStim(win, text='Are you ready to begin the task? Click "next" to begin the task.', height = 1, color='black', pos=(0,5))
+text_screen6 = visual.TextStim(win, text='You have completed the task, good job! Thank you for participating!', height = 1, color='black', pos=(0,5))
 
-# setting the beginning variables
-count = 0
-max_count = 150
-hit_interval = 30
-first_index = 0
-second_index = 15
+max_count_practice = 150 # 5 minutes
+max_count_experiment = 9000 # 60 minutes
 
-#-------------[Start At Screens 1-3]-------------#
-
-current = 1
-
-while current <= 5:
-    if current == 1:
-        action = screen_changer(screen_text=text_screen1, button1_check=False, button1_action='previous', button2_action='next')
-        
-    elif current == 2:
-        action = screen_changer(screen_text=text_screen2, button1_check=True, button1_action='previous', button2_action='next')
+def experiment(max_count):
+    # setting the beginning variables
+    count = 0
+    first_index = 0
+    second_index = 15
+    hit_interval = 30
     
-    elif current == 3:
-        action = screen_changer(screen_text=text_screen3, button1_check=True, button1_action='previous', button2_action='start_task')
-    
-    if action == 'start_task':
-        break
-    
-    if action == 'previous':
-        current -= 1
-    elif action == 'next':
-        current += 1
-
-#-------------[Main Experiment Loop]-------------#
-
-if action == 'start_task':
-    while count < max_count: #runs 150 times (count 0-149)
-        
+    while count < max_count: #runs as long as specified in function parameter
         i = count % hit_interval # Current index (0-29) in this set of 30
         
         # Generate indecies every 30 numbers
@@ -187,6 +165,34 @@ if action == 'start_task':
         # Clear keyList to ignore accidental key presses during the ISI
         event.getKeys(keyList=['space'], timeStamped=True)
 
+#-------------[Start At Screens 1-3]-------------#
+
+current = 1
+
+while current <= 5:
+    if current == 1:
+        action = screen_changer(screen_text=text_screen1, button1_check=False, button1_action='previous', button2_action='next')
+        
+    elif current == 2:
+        action = screen_changer(screen_text=text_screen2, button1_check=True, button1_action='previous', button2_action='next')
+    
+    elif current == 3:
+        action = screen_changer(screen_text=text_screen3, button1_check=True, button1_action='previous', button2_action='start_task')
+    
+    if action == 'start_task':
+        break
+    
+    if action == 'previous':
+        current -= 1
+    elif action == 'next':
+        current += 1
+
+#-------------[Practice Experiment Loop]-------------#
+
+if action == 'start_task':
+    experiment(max_count_practice)
+    
+
 #-------------[Continue To Screens 4-5]-------------#
 
 current = 4
@@ -195,10 +201,26 @@ while current <= 5:
     if current == 4:
         action = screen_changer(screen_text=text_screen4, button1_check=False, button1_action='previous', button2_action='next')
     elif current == 5:
-        action = screen_changer(screen_text=text_screen5, button1_check=True, button1_action='previous', button2_action='next')
+        action = screen_changer(screen_text=text_screen5, button1_check=True, button1_action='previous', button2_action='start_task')
+    
+    if action == 'start_task':
+        break
     
     if action == 'previous':
         current -= 1
     elif action == 'next':
         current+= 1
 
+
+#-------------[Main Experiment Loop]-------------#
+
+if action == 'start_task':
+    experiment(max_count_experiment)
+    
+current = 6
+
+while current == 6:
+    action = screen_changer(screen_text=text_screen6, button1_check=False, button1_action='previous', button2_action='start_task')
+    
+    if action == 'next':
+        current+= 1
