@@ -131,6 +131,7 @@ def save_data(stored_data):
         df = df.append({'Type': 'Main', 'Correct Rejections': stored_data['main_reject'][i]},
         ignore_index=True)
     
+    # to change it to your directory
     df.to_csv(r'C:\Users\yesse\OneDrive\Documents\experiment_data.csv', index=False)
 
 def experiment(max_count, exp_handler, stored_data):
