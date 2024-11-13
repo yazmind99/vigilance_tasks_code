@@ -27,6 +27,9 @@ def is_critical(digit1, digit2):
     else:
         return False
 
+# Just a variable to store the participant number in for now.
+participant = 0
+
 # Function that changes "screens"
 def screen_changer(screen_text, button1_check = None, button1_action='previous', button2_action='next'): 
     mouse = event.Mouse(win=win)
@@ -47,6 +50,35 @@ def screen_changer(screen_text, button1_check = None, button1_action='previous',
         button2.draw()
         button2_text.draw()
     
+    
+    # Code specifically to render the participant number screen
+    if screen_text == text_screen0:
+        response=visual.TextBox2(
+            win,
+            text="",
+            color=[1,1,1],
+            borderColor=[1,1,1],
+            colorSpace='rgb',
+            size=(1,.1),
+            pos=(0,0),
+            editable=True,
+            units='norm')
+            
+        while True:
+            screen_text.draw()
+            response.draw()
+            button2.draw()
+            button2_text.draw()
+        
+            keys = event.getKeys()
+            win.flip()
+            
+            if mouse.isPressedIn(button2):
+                core.wait(0.2)
+                participant = int(response.getText())
+                print(participant)
+                return button2_action
+            
     win.flip()
 
     while True:
@@ -285,10 +317,13 @@ exp_handler = ExperimentHandler()
 
 #-------------[Start At Screens 1-3]-------------#
 
-current = 1
+current = 0
 
 while current <= 5:
-    if current == 1:
+    if current == 0:
+        action = screen_changer(screen_text=text_screen0, button1_check=False, button1_action='previous', button2_action='next')
+    
+    elif current == 1:
         action = screen_changer(screen_text=text_screen1, button1_check=False, button1_action='previous', button2_action='next')
         
     elif current == 2:
