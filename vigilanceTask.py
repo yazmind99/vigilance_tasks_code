@@ -66,6 +66,7 @@ win = visual.Window([1500,800], monitor="testMonitor", units="deg")
 text = visual.TextStim(win, height = 3)
 
 # Screen buttons/texts
+text_screen0 = visual.TextStim(win, text='Enter participant number:', height=1, color='black', pos=(0,5))
 text_screen1 = visual.TextStim(win, text='Insert instructions here.', height=1, color='black', pos=(0,5))
 text_screen2 = visual.TextStim(win, text='Insert task details here.', height = 1, color='black', pos=(0,5))
 text_screen3 = visual.TextStim(win, text='Are you ready to begin a practice run? Click "next" to begin the task.', height = 1, color='black', pos=(0,5))
@@ -74,7 +75,7 @@ text_screen5 = visual.TextStim(win, text='Are you ready to begin the task? Click
 text_screen6 = visual.TextStim(win, text='You have completed the task, good job! Thank you for participating!', height = 1, color='black', pos=(0,5))
 
 max_count_practice = 15 # 5 minutes # temporarily changed to 30 seconds
-max_count_experiment = 16 # 60 minutes # temporarily changed to 48 seconds
+max_count_experiment = 24 # 60 minutes # temporarily changed to 48 seconds
 
 stored_data = {
     'practice_hits': [],
@@ -132,9 +133,9 @@ def save_data(stored_data):
         ignore_index=True)
     
     # to change it to your directory
-    df.to_csv(r'C:\Users\yesse\OneDrive\Documents\experiment_data.csv', index=False)
+    df.to_csv(r'C:\PsychoPyData\experiment_data.csv', index=False)
 
-def experiment(max_count, exp_handler, stored_data):
+def experiment(max_count, exp_handler, stored_data, is_practice):
     # setting the beginning variables
     count = 0
     first_index = 0
@@ -189,9 +190,13 @@ def experiment(max_count, exp_handler, stored_data):
             
             # Check if the response is correct or incorrect
             if is_critical(digit, next_digit):
-                feedback_text = "Correct ✓"
-                text.color = '#03C04A'
-                text.bold = True
+                if is_practice:
+                    feedback_text = "Correct ✓"
+                    text.color = '#03C04A'
+                    text.bold = True
+                else: 
+                    feedback_text = "Saved"
+                    
                 # if conditional to tell if its practice
                 if max_count == max_count_practice:
                     stored_data['practice_hits'].append(1)
@@ -203,9 +208,13 @@ def experiment(max_count, exp_handler, stored_data):
                 
 
             else:
-                feedback_text = "Wrong ❌"
-                text.color = '#FF0000'
-                text.bold = True
+                if is_practice:
+                    feedback_text = "Wrong ❌"
+                    text.color = '#FF0000'
+                    text.bold = True
+                else: 
+                    feedback_text = "Saved"
+                    
                 if max_count == max_count_practice:
                     stored_data['practice_fa'].append(1)
                     stored_data['practice_fa_mean_rt'].append(response_time_ms)
@@ -223,9 +232,13 @@ def experiment(max_count, exp_handler, stored_data):
         else:
             # Was it a correct rejection?
             if is_critical(digit, next_digit):
-                feedback_text = "Miss ❌"
-                text.color = '#FF0000'
-                text.bold = True
+                if is_practice:
+                    feedback_text = "Miss ❌"
+                    text.color = '#FF0000'
+                    text.bold = True
+                else:
+                    feedback_text = "+"
+                    
                 if max_count == max_count_practice:
                     stored_data['practice_miss'].append(1)
                     stored_data['practice_miss_mean_rt'].append(response_time_ms)
@@ -295,7 +308,7 @@ while current <= 5:
 #-------------[Practice Experiment Loop]-------------#
 
 if action == 'start_task':
-    experiment(max_count_practice, exp_handler, stored_data)
+    experiment(max_count_practice, exp_handler, stored_data, True)
     
 
 #-------------[Continue To Screens 4-5]-------------#
@@ -320,7 +333,7 @@ while current <= 5:
 #-------------[Main Experiment Loop]-------------#
 
 if action == 'start_task':
-    experiment(max_count_experiment, exp_handler, stored_data)
+    experiment(max_count_experiment, exp_handler, stored_data, False)
      
 save_data(stored_data)
 
