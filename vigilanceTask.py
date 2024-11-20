@@ -3,6 +3,7 @@ import pandas as pd
 from psychopy import visual, core, event
 import random
 import math
+import os
 from psychopy.data import ExperimentHandler
 
 #If we want to use random numbers:
@@ -127,6 +128,9 @@ stored_data = {
 }
 
 def save_data(stored_data):
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(script_dir, "experiment_data.csv")
+    
     df = pd.DataFrame(columns=['Type', 'Hits', 'Hit Reaction Time', 'Misses', 'Miss Reaction Time', 
     'False Alarms', 'FA Reaction Time', 'Correct Rejections'])
     
@@ -165,7 +169,12 @@ def save_data(stored_data):
         ignore_index=True)
     
     # to change it to your directory
-    df.to_csv(r'C:\PsychoPyData\experiment_data.csv', index=False)
+    
+    try:
+        df.to_csv(file_path, index=False)
+        print(f"Data successfully saved to: {file_path}")
+    except Exception as e:
+        print(f"Error saving data: {e}")
 
 def experiment(max_count, exp_handler, stored_data, is_practice):
     # setting the beginning variables
