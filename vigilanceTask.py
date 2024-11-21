@@ -28,9 +28,6 @@ def is_critical(digit1, digit2):
     else:
         return False
 
-# Just a variable to store the participant number in for now.
-participant = 0
-
 # Function that changes "screens"
 def screen_changer(screen_text, button1_check = None, button1_action='previous', button2_action='next'): 
     mouse = event.Mouse(win=win)
@@ -76,8 +73,8 @@ def screen_changer(screen_text, button1_check = None, button1_action='previous',
             
             if mouse.isPressedIn(button2):
                 core.wait(0.2)
-                participant = int(response.getText())
-                print(participant)
+                stored_data['participant'] = int(response.getText())
+                print(stored_data['participant'])
                 return button2_action
             
     win.flip()
@@ -107,21 +104,26 @@ text_screen4 = visual.TextStim(win, text='You have completed the practice run, y
 text_screen5 = visual.TextStim(win, text='Are you ready to begin the task? Click "next" to begin the task.', height = 1, color='black', pos=(0,5))
 text_screen6 = visual.TextStim(win, text='You have completed the task, good job! Thank you for participating!', height = 1, color='black', pos=(0,5))
 
-max_count_practice = 15 # 5 minutes # temporarily changed to 30 seconds
-max_count_experiment = 24 # 60 minutes # temporarily changed to 48 seconds
+max_count_practice = 3 # 5 minutes # temporarily changed to 6 seconds
+max_count_experiment = 6 # 60 minutes # temporarily changed to 12 seconds
 
 stored_data = {
-    'practice_hits': [],
-    'main_hits': [],
-    'practice_miss': [], 
-    'main_miss': [],
-    'practice_fa': [],
-    'main_fa': [],
-    'practice_reject': [],
-    'main_reject': [],
+    'participant': 0,
+    
+    'practice_count': 0,
+    'practice_hits': 0,    
+    'practice_miss': 0,     
+    'practice_fa': 0,    
+    'practice_reject': 0,    
     'practice_hit_mean_rt': [],
     'practice_fa_mean_rt': [],
     'practice_miss_mean_rt': [],
+    
+    'main_count': 0,
+    'main_hits': 0,
+    'main_miss': 0,
+    'main_fa': 0,
+    'main_reject': 0,
     'main_hit_mean_rt': [],
     'main_fa_mean_rt': [],
     'main_miss_mean_rt': []
@@ -131,44 +133,21 @@ def save_data(stored_data):
     script_dir = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(script_dir, "experiment_data.csv")
     
-    df = pd.DataFrame(columns=['Type', 'Hits', 'Hit Reaction Time', 'Misses', 'Miss Reaction Time', 
-    'False Alarms', 'FA Reaction Time', 'Correct Rejections'])
+    df = pd.DataFrame(columns=['Participant', 'Session', 'n_hits', 'n_misses', 'n_falsealarms', 
+    'n_correctrejections', 'n_falsealarms_isi', 'hit_mean_rt', 'fa_mean_rt', 'miss_mean_rt', 
+    'hit_median_rt', 'fa_median_rt', 'miss_median_rt'])
     
-    # Storing practice values
-    for i in range(len(stored_data['practice_hits'])):
-        df = df.append({'Type': 'Practice', 'Hits': stored_data['practice_hits'][i], 'Hit Reaction Time': stored_data['practice_hit_mean_rt'][i]},
-        ignore_index=True)
+    # storing practice data
+    df = df.append({'Participant': stored_data['participant'], 'Session': 0, 'n_hits': stored_data['practice_hits'],
+    'n_misses': stored_data['practice_miss'], 'n_falsealarms': stored_data['practice_fa'], 
+    'n_correctrejections': stored_data['practice_reject'], 'hit_mean_rt': stored_data['practice_hit_mean_rt'], 
+    'fa_mean_rt': stored_data['practice_fa_mean_rt'], 'miss_mean_rt': stored_data['practice_miss_mean_rt']},ignore_index=True)
     
-    for i in range(len(stored_data['practice_miss'])):
-        df = df.append({'Type': 'Practice', 'Misses': stored_data['practice_miss'][i], 'Miss Reaction Time': stored_data['practice_miss_mean_rt'][i]},
-        ignore_index=True)
-        
-    for i in range(len(stored_data['practice_fa'])):
-        df = df.append({'Type': 'Practice', 'False Alarms': stored_data['practice_fa'][i], 'FA Reaction Time': stored_data['practice_fa_mean_rt'][i]},
-        ignore_index=True)
-
-    for i in range(len(stored_data['practice_reject'])):
-        df = df.append({'Type': 'Practice', 'Correct Rejections': stored_data['practice_reject'][i]},
-        ignore_index=True)
-    
-    # Storing main values
-    for i in range(len(stored_data['main_hits'])):
-        df = df.append({'Type': 'Main', 'Hits': stored_data['main_hits'][i], 'Hit Reaction Time': stored_data['main_hit_mean_rt'][i]},
-        ignore_index=True)
-    
-    for i in range(len(stored_data['main_miss'])):
-        df = df.append({'Type': 'Main', 'Misses': stored_data['main_miss'][i], 'Miss Reaction Time': stored_data['main_miss_mean_rt'][i]},
-        ignore_index=True)
-        
-    for i in range(len(stored_data['main_fa'])):
-        df = df.append({'Type': 'Main', 'False Alarms': stored_data['main_fa'][i], 'FA Reaction Time': stored_data['main_fa_mean_rt'][i]},
-        ignore_index=True)
-
-    for i in range(len(stored_data['main_reject'])):
-        df = df.append({'Type': 'Main', 'Correct Rejections': stored_data['main_reject'][i]},
-        ignore_index=True)
-    
-    # to change it to your directory
+    # storing main data
+    df = df.append({'Participant': stored_data['participant'], 'Session': 1, 'n_hits': stored_data['main_hits'],
+    'n_misses': stored_data['main_miss'], 'n_falsealarms': stored_data['main_fa'], 
+    'n_correctrejections': stored_data['main_reject'], 'hit_mean_rt': stored_data['main_hit_mean_rt'], 
+    'fa_mean_rt': stored_data['main_fa_mean_rt'], 'miss_mean_rt': stored_data['main_miss_mean_rt']},ignore_index=True)
     
     try:
         df.to_csv(file_path, index=False)
@@ -176,7 +155,7 @@ def save_data(stored_data):
     except Exception as e:
         print(f"Error saving data: {e}")
 
-def experiment(max_count, exp_handler, stored_data, is_practice):
+def experiment(max_count, stored_data, is_practice):
     # setting the beginning variables
     count = 0
     first_index = 0
@@ -212,6 +191,15 @@ def experiment(max_count, exp_handler, stored_data, is_practice):
             
         count += 1
         
+        if is_practice:
+            stored_data['practice_count'] += 1
+            print(stored_data['practice_count'])
+        else:
+            stored_data['main_count'] += 1
+            print(stored_data['main_count'])
+        
+        
+        
         #-------------[Display + Input Section]-------------#
         
         # putting digit and next_digit together
@@ -240,10 +228,10 @@ def experiment(max_count, exp_handler, stored_data, is_practice):
                     
                 # if conditional to tell if its practice
                 if max_count == max_count_practice:
-                    stored_data['practice_hits'].append(1)
+                    stored_data['practice_hits'] += 1
                     stored_data['practice_hit_mean_rt'].append(response_time_ms)
                 if max_count == max_count_experiment:
-                    stored_data['main_hits'].append(1)
+                    stored_data['main_hits'] += 1
                     stored_data['main_hit_mean_rt'].append(response_time_ms)
 
                 
@@ -257,10 +245,10 @@ def experiment(max_count, exp_handler, stored_data, is_practice):
                     feedback_text = "Saved"
                     
                 if max_count == max_count_practice:
-                    stored_data['practice_fa'].append(1)
+                    stored_data['practice_fa'] += 1
                     stored_data['practice_fa_mean_rt'].append(response_time_ms)
                 if max_count == max_count_experiment:
-                    stored_data['main_fa'].append(1)
+                    stored_data['main_fa'] += 1
                     stored_data['main_fa_mean_rt'].append(response_time_ms)
             
 
@@ -281,19 +269,19 @@ def experiment(max_count, exp_handler, stored_data, is_practice):
                     feedback_text = "+"
                     
                 if max_count == max_count_practice:
-                    stored_data['practice_miss'].append(1)
+                    stored_data['practice_miss'] += 1
                     stored_data['practice_miss_mean_rt'].append(response_time_ms)
                 if max_count == max_count_experiment:
-                    stored_data['main_miss'].append(1)
+                    stored_data['main_miss'] += 1
                     stored_data['main_miss_mean_rt'].append(response_time_ms)
 
             else:
                 feedback_text = "+"
                 text.color = 'white'
                 if max_count == max_count_practice:
-                    stored_data['practice_reject'].append(1)
+                    stored_data['practice_reject'] += 1
                 if max_count == max_count_experiment:
-                    stored_data['main_reject'].append(1)
+                    stored_data['main_reject'] += 1
             
             text.text = feedback_text
             text.draw()
@@ -302,27 +290,9 @@ def experiment(max_count, exp_handler, stored_data, is_practice):
         
         text.bold = False
         
-        # Store data for each trial
-        exp_handler.addData('Practice Hits', stored_data['practice_hits'])
-        exp_handler.addData('Practice Miss', stored_data['practice_miss'])
-        exp_handler.addData('Practice False', stored_data['practice_fa'])
-        exp_handler.addData('Practice Rejection', stored_data['practice_reject'])
-        exp_handler.addData('practice_hit_mean_rt', stored_data['practice_hit_mean_rt'])
-        exp_handler.addData('practice_fa_mean_rt', stored_data['practice_fa_mean_rt'])
-        exp_handler.addData('practice_miss_mean_rt', stored_data['practice_miss_mean_rt'])
-        
-        exp_handler.addData('Main Hits', stored_data['main_hits'])
-        exp_handler.addData('Main Miss', stored_data['main_miss'])
-        exp_handler.addData('Main False', stored_data['main_fa'])
-        exp_handler.addData('Main Rejection', stored_data['main_reject'])
-        exp_handler.addData('main_hit_mean_rt', stored_data['main_hit_mean_rt'])
-        exp_handler.addData('main_fa_mean_rt', stored_data['main_fa_mean_rt'])
-        exp_handler.addData('main_miss_mean_rt', stored_data['main_miss_mean_rt'])
-       
         # Clear keyList to ignore accidental key presses during the ISI
         event.getKeys(keyList=['space'], timeStamped=True)
 
-exp_handler = ExperimentHandler()
 
 #-------------[Start At Screens 1-3]-------------#
 
@@ -352,7 +322,7 @@ while current <= 5:
 #-------------[Practice Experiment Loop]-------------#
 
 if action == 'start_task':
-    experiment(max_count_practice, exp_handler, stored_data, True)
+    experiment(max_count_practice, stored_data, True)
     
 
 #-------------[Continue To Screens 4-5]-------------#
@@ -377,7 +347,7 @@ while current <= 5:
 #-------------[Main Experiment Loop]-------------#
 
 if action == 'start_task':
-    experiment(max_count_experiment, exp_handler, stored_data, False)
+    experiment(max_count_experiment, stored_data, False)
      
 save_data(stored_data)
 
@@ -387,4 +357,6 @@ while current == 6:
     action = screen_changer(screen_text=text_screen6, button1_check=False, button1_action='previous', button2_action='start_task')
     
     if action == 'next':
-        current+= 1
+        win.close()
+        core.quit()
+        
