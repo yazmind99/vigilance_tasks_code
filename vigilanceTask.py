@@ -92,6 +92,7 @@ def screen_changer(screen_text, button1_check = None, button1_action='previous',
             return button2_action
 
 #-------------[Declaring Variables]-------------#
+
 # Create a window
 win = visual.Window([1500,800], monitor="testMonitor", units="deg")
 
@@ -136,36 +137,36 @@ def save_data(stored_data):
     
     # Storing practice values
     for i in range(len(stored_data['practice_hits'])):
-        df = df.append({'Type': 'Practice', 'Hits': stored_data['practice_hits'][i], 'Hit Reaction Time': stored_data['practice_hit_mean_rt'][i]},
+        df = df._append({'Type': 'Practice', 'Hits': stored_data['practice_hits'][i], 'Hit Reaction Time': stored_data['practice_hit_mean_rt'][i]},
         ignore_index=True)
     
     for i in range(len(stored_data['practice_miss'])):
-        df = df.append({'Type': 'Practice', 'Misses': stored_data['practice_miss'][i], 'Miss Reaction Time': stored_data['practice_miss_mean_rt'][i]},
+        df = df._append({'Type': 'Practice', 'Misses': stored_data['practice_miss'][i], 'Miss Reaction Time': stored_data['practice_miss_mean_rt'][i]},
         ignore_index=True)
         
     for i in range(len(stored_data['practice_fa'])):
-        df = df.append({'Type': 'Practice', 'False Alarms': stored_data['practice_fa'][i], 'FA Reaction Time': stored_data['practice_fa_mean_rt'][i]},
+        df = df._append({'Type': 'Practice', 'False Alarms': stored_data['practice_fa'][i], 'FA Reaction Time': stored_data['practice_fa_mean_rt'][i]},
         ignore_index=True)
 
     for i in range(len(stored_data['practice_reject'])):
-        df = df.append({'Type': 'Practice', 'Correct Rejections': stored_data['practice_reject'][i]},
+        df = df._append({'Type': 'Practice', 'Correct Rejections': stored_data['practice_reject'][i]},
         ignore_index=True)
     
     # Storing main values
     for i in range(len(stored_data['main_hits'])):
-        df = df.append({'Type': 'Main', 'Hits': stored_data['main_hits'][i], 'Hit Reaction Time': stored_data['main_hit_mean_rt'][i]},
+        df = df._append({'Type': 'Main', 'Hits': stored_data['main_hits'][i], 'Hit Reaction Time': stored_data['main_hit_mean_rt'][i]},
         ignore_index=True)
     
     for i in range(len(stored_data['main_miss'])):
-        df = df.append({'Type': 'Main', 'Misses': stored_data['main_miss'][i], 'Miss Reaction Time': stored_data['main_miss_mean_rt'][i]},
+        df = df._append({'Type': 'Main', 'Misses': stored_data['main_miss'][i], 'Miss Reaction Time': stored_data['main_miss_mean_rt'][i]},
         ignore_index=True)
         
     for i in range(len(stored_data['main_fa'])):
-        df = df.append({'Type': 'Main', 'False Alarms': stored_data['main_fa'][i], 'FA Reaction Time': stored_data['main_fa_mean_rt'][i]},
+        df = df._append({'Type': 'Main', 'False Alarms': stored_data['main_fa'][i], 'FA Reaction Time': stored_data['main_fa_mean_rt'][i]},
         ignore_index=True)
 
     for i in range(len(stored_data['main_reject'])):
-        df = df.append({'Type': 'Main', 'Correct Rejections': stored_data['main_reject'][i]},
+        df = df._append({'Type': 'Main', 'Correct Rejections': stored_data['main_reject'][i]},
         ignore_index=True)
     
     # to change it to your directory
@@ -182,6 +183,7 @@ def experiment(max_count, exp_handler, stored_data, is_practice):
     first_index = 0
     second_index = 15
     hit_interval = 30
+    clock = core.Clock()
     #rt_list = []
     
     while count < max_count: #runs as long as specified in function parameter
@@ -220,14 +222,17 @@ def experiment(max_count, exp_handler, stored_data, is_practice):
         text.color = 'white'
         text.draw()
         win.flip()
+        clock.reset()
         core.wait(1)
 
         # Check for keyboard input
-        keys = event.getKeys(keyList=['space'], timeStamped=True)
+        keys = event.getKeys(keyList=['space'], timeStamped=clock)
 
         if keys:
-            response_time = keys[0][1]              # seconds
-            response_time_ms = response_time * 1000 # milliseconds
+            response_time = keys[0][1]               # seconds
+            response_time_ms = response_time * 1000  # milliseconds
+            
+            print(response_time_ms)
             
             # Check if the response is correct or incorrect
             if is_critical(digit, next_digit):
