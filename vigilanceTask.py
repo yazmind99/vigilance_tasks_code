@@ -139,13 +139,13 @@ def save_data(stored_data):
     'hit_median_rt', 'fa_median_rt', 'miss_median_rt'])
     
     # storing practice data
-    df = df.append({'Participant': stored_data['participant'], 'Session': 0, 'n_hits': stored_data['practice_hits'],
+    df = df._append({'Participant': stored_data['participant'], 'Session': 0, 'n_hits': stored_data['practice_hits'],
     'n_misses': stored_data['practice_miss'], 'n_falsealarms': stored_data['practice_fa'], 
     'n_correctrejections': stored_data['practice_reject'], 'hit_mean_rt': stored_data['practice_hit_mean_rt'], 
     'fa_mean_rt': stored_data['practice_fa_mean_rt'], 'miss_mean_rt': stored_data['practice_miss_mean_rt']},ignore_index=True)
     
     # storing main data
-    df = df.append({'Participant': stored_data['participant'], 'Session': 1, 'n_hits': stored_data['main_hits'],
+    df = df._append({'Participant': stored_data['participant'], 'Session': 1, 'n_hits': stored_data['main_hits'],
     'n_misses': stored_data['main_miss'], 'n_falsealarms': stored_data['main_fa'], 
     'n_correctrejections': stored_data['main_reject'], 'hit_mean_rt': stored_data['main_hit_mean_rt'], 
     'fa_mean_rt': stored_data['main_fa_mean_rt'], 'miss_mean_rt': stored_data['main_miss_mean_rt']},ignore_index=True)
