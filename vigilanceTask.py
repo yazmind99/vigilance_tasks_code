@@ -1,5 +1,6 @@
 # Import necessary libraries
 import pandas as pd
+import statistics
 from psychopy import visual, core, event
 import random
 import math
@@ -134,6 +135,42 @@ def save_data(stored_data):
     script_dir = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(script_dir, "experiment_data.csv")
     
+    PracHitMeanRt = 0
+    PracFaMeanRt = 0
+    PracMissMeanRt = 0
+    
+    PracHitMedianRt = 0
+    PracFaMedianRt = 0
+    PracMissMedianRt = 0
+    
+    MainHitMeanRt = 0
+    MainFaMeanRt = 0
+    MainMissMeanRt = 0
+    
+    MainHitMedianRt = 0
+    MainFaMedianRt = 0
+    MainMissMedianRt = 0
+    
+    if len(stored_data['practice_hit_mean_rt']) != 0:
+        PracHitMeanRt = statistics.mean(stored_data['practice_hit_mean_rt'])
+        PracHitMedianRt = statistics.median(stored_data['practice_hit_mean_rt'])
+    if len(stored_data['practice_fa_mean_rt']) != 0:
+        PracFaMeanRt = statistics.mean(stored_data['practice_fa_mean_rt'])
+        PracFaMedianRt = statistics.median(stored_data['practice_fa_mean_rt'])
+    if len(stored_data['practice_miss_mean_rt']) != 0:
+        PracMissMeanRt = statistics.mean(stored_data['practice_miss_mean_rt'])
+        PracMissMedianRt = statistics.median(stored_data['practice_miss_mean_rt'])
+    
+    if len(stored_data['main_hit_mean_rt']) != 0:
+        MainHitMeanRt = statistics.mean(stored_data['main_hit_mean_rt'])
+        MainHitMedianRt = statistics.median(stored_data['main_hit_mean_rt'])
+    if len(stored_data['main_fa_mean_rt']) != 0:
+        MainFaMeanRt = statistics.mean(stored_data['main_fa_mean_rt'])
+        MainFaMedianRt = statistics.median(stored_data['main_fa_mean_rt'])
+    if len(stored_data['main_miss_mean_rt']) != 0:
+        MainMissMeanRt = statistics.mean(stored_data['main_miss_mean_rt'])
+        MainMissMedianRt = statistics.median(stored_data['main_miss_mean_rt'])
+    
     df = pd.DataFrame(columns=['Participant', 'Session', 'n_hits', 'n_misses', 'n_falsealarms', 
     'n_correctrejections', 'n_falsealarms_isi', 'hit_mean_rt', 'fa_mean_rt', 'miss_mean_rt', 
     'hit_median_rt', 'fa_median_rt', 'miss_median_rt'])
@@ -141,14 +178,16 @@ def save_data(stored_data):
     # storing practice data
     df = df._append({'Participant': stored_data['participant'], 'Session': 0, 'n_hits': stored_data['practice_hits'],
     'n_misses': stored_data['practice_miss'], 'n_falsealarms': stored_data['practice_fa'], 
-    'n_correctrejections': stored_data['practice_reject'], 'hit_mean_rt': stored_data['practice_hit_mean_rt'], 
-    'fa_mean_rt': stored_data['practice_fa_mean_rt'], 'miss_mean_rt': stored_data['practice_miss_mean_rt']},ignore_index=True)
+    'n_correctrejections': stored_data['practice_reject'], 'hit_mean_rt': PracHitMeanRt, 
+    'fa_mean_rt': PracFaMeanRt, 'miss_mean_rt': PracMissMeanRt, 'hit_median_rt': PracHitMedianRt, 'fa_median_rt': PracFaMedianRt,
+    'miss_median_rt': PracMissMeanRt},ignore_index=True)
     
     # storing main data
     df = df._append({'Participant': stored_data['participant'], 'Session': 1, 'n_hits': stored_data['main_hits'],
     'n_misses': stored_data['main_miss'], 'n_falsealarms': stored_data['main_fa'], 
-    'n_correctrejections': stored_data['main_reject'], 'hit_mean_rt': stored_data['main_hit_mean_rt'], 
-    'fa_mean_rt': stored_data['main_fa_mean_rt'], 'miss_mean_rt': stored_data['main_miss_mean_rt']},ignore_index=True)
+    'n_correctrejections': stored_data['main_reject'], 'hit_mean_rt': MainHitMeanRt, 
+    'fa_mean_rt': MainFaMeanRt, 'miss_mean_rt': MainMissMeanRt, 'hit_median_rt': MainHitMedianRt, 'fa_median_rt': MainFaMedianRt,
+    'miss_median_rt': MainMissMedianRt},ignore_index=True)
     
     try:
         df.to_csv(file_path, index=False)
@@ -238,8 +277,6 @@ def experiment(max_count, stored_data, is_practice):
                 if max_count == max_count_experiment:
                     stored_data['main_hits'] += 1
                     stored_data['main_hit_mean_rt'].append(response_time_ms)
-
-                
 
             else:
                 if is_practice:
