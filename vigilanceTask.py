@@ -106,8 +106,8 @@ text_screen4 = visual.TextStim(win, text='You have completed the practice run, y
 text_screen5 = visual.TextStim(win, text='Are you ready to begin the task? Click "next" to begin the task.', height = 1, color='black', pos=(0,5))
 text_screen6 = visual.TextStim(win, text='You have completed the task, good job! Thank you for participating!', height = 1, color='black', pos=(0,5))
 
-max_count_practice = 3 # 5 minutes # temporarily changed to 6 seconds
-max_count_experiment = 6 # 60 minutes # temporarily changed to 12 seconds
+max_count_practice = 150 # 5 minutes
+max_count_experiment = 1800 # 60 minutes
 
 stored_data = {
     'participant': 0,
@@ -396,7 +396,7 @@ save_data(stored_data)
 current = 6
 
 while current == 6:
-    action = screen_changer(screen_text=text_screen6, button1_check=False, button1_action='previous', button2_action='start_task')
+    action = screen_changer(screen_text=text_screen6, button1_check=False, button1_action='previous', button2_action='next')
     
     if action == 'next':
         win.close()
