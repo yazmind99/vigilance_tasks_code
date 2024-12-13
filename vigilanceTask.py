@@ -89,48 +89,7 @@ def screen_changer(screen_text, button1_check = None, button1_action='previous',
             core.wait(0.2)
             return button2_action
 
-#-------------[Declaring Variables]-------------#
-
-# Create a window
-win = visual.Window([1500,800], monitor="testMonitor", units="deg")
-
-# Create text stimuli
-text = visual.TextStim(win, height = 3)
-
-# Screen buttons/texts
-text_screen0 = visual.TextStim(win, text='Enter participant number:', height=1, color='black', pos=(0,5))
-text_screen1 = visual.TextStim(win, text='Insert instructions here.', height=1, color='black', pos=(0,5))
-text_screen2 = visual.TextStim(win, text='Insert task details here.', height = 1, color='black', pos=(0,5))
-text_screen3 = visual.TextStim(win, text='Are you ready to begin a practice run? Click "next" to begin the task.', height = 1, color='black', pos=(0,5))
-text_screen4 = visual.TextStim(win, text='You have completed the practice run, you will now complete the entire task.', height = 1, color='black', pos=(0,5))
-text_screen5 = visual.TextStim(win, text='Are you ready to begin the task? Click "next" to begin the task.', height = 1, color='black', pos=(0,5))
-text_screen6 = visual.TextStim(win, text='You have completed the task, good job! Thank you for participating!', height = 1, color='black', pos=(0,5))
-
-max_count_practice = 150 # 5 minutes
-max_count_experiment = 1800 # 60 minutes
-
-stored_data = {
-    'participant': 0,
-    
-    'practice_count': 0,
-    'practice_hits': 0,    
-    'practice_miss': 0,     
-    'practice_fa': 0,    
-    'practice_reject': 0,    
-    'practice_hit_mean_rt': [],
-    'practice_fa_mean_rt': [],
-    'practice_miss_mean_rt': [],
-    
-    'main_count': 0,
-    'main_hits': 0,
-    'main_miss': 0,
-    'main_fa': 0,
-    'main_reject': 0,
-    'main_hit_mean_rt': [],
-    'main_fa_mean_rt': [],
-    'main_miss_mean_rt': []
-}
-
+# Function that saves the data
 def save_data(stored_data):
     script_dir = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(script_dir, "experiment_data.csv")
@@ -151,34 +110,34 @@ def save_data(stored_data):
     MainFaMedianRt = 0
     MainMissMedianRt = 0
     
-    if len(stored_data['practice_hit_mean_rt']) != 0:
-        PracHitMeanRt = statistics.mean(stored_data['practice_hit_mean_rt'])
-        PracHitMedianRt = statistics.median(stored_data['practice_hit_mean_rt'])
-    if len(stored_data['practice_fa_mean_rt']) != 0:
-        PracFaMeanRt = statistics.mean(stored_data['practice_fa_mean_rt'])
-        PracFaMedianRt = statistics.median(stored_data['practice_fa_mean_rt'])
-    if len(stored_data['practice_miss_mean_rt']) != 0:
-        PracMissMeanRt = statistics.mean(stored_data['practice_miss_mean_rt'])
-        PracMissMedianRt = statistics.median(stored_data['practice_miss_mean_rt'])
+    if len(stored_data['practice_hit_rt']) != 0:
+        PracHitMeanRt = statistics.mean(stored_data['practice_hit_rt'])
+        PracHitMedianRt = statistics.median(stored_data['practice_hit_rt'])
+    if len(stored_data['practice_fa_rt']) != 0:
+        PracFaMeanRt = statistics.mean(stored_data['practice_fa_rt'])
+        PracFaMedianRt = statistics.median(stored_data['practice_fa_rt'])
+    if len(stored_data['practice_miss_rt']) != 0:
+        PracMissMeanRt = statistics.mean(stored_data['practice_miss_rt'])
+        PracMissMedianRt = statistics.median(stored_data['practice_miss_rt'])
     
-    if len(stored_data['main_hit_mean_rt']) != 0:
-        MainHitMeanRt = statistics.mean(stored_data['main_hit_mean_rt'])
-        MainHitMedianRt = statistics.median(stored_data['main_hit_mean_rt'])
-    if len(stored_data['main_fa_mean_rt']) != 0:
-        MainFaMeanRt = statistics.mean(stored_data['main_fa_mean_rt'])
-        MainFaMedianRt = statistics.median(stored_data['main_fa_mean_rt'])
-    if len(stored_data['main_miss_mean_rt']) != 0:
-        MainMissMeanRt = statistics.mean(stored_data['main_miss_mean_rt'])
-        MainMissMedianRt = statistics.median(stored_data['main_miss_mean_rt'])
+    if len(stored_data['main_hit_rt']) != 0:
+        MainHitMeanRt = statistics.mean(stored_data['main_hit_rt'])
+        MainHitMedianRt = statistics.median(stored_data['main_hit_rt'])
+    if len(stored_data['main_fa_rt']) != 0:
+        MainFaMeanRt = statistics.mean(stored_data['main_fa_rt'])
+        MainFaMedianRt = statistics.median(stored_data['main_fa_rt'])
+    if len(stored_data['main_miss_rt']) != 0:
+        MainMissMeanRt = statistics.mean(stored_data['main_miss_rt'])
+        MainMissMedianRt = statistics.median(stored_data['main_miss_rt'])
     
     df = pd.DataFrame(columns=['Participant', 'Session', 'n_hits', 'n_misses', 'n_falsealarms', 
-    'n_correctrejections', 'n_falsealarms_isi', 'hit_mean_rt', 'fa_mean_rt', 'miss_mean_rt', 
+    'n_correctrejections', 'hit_mean_rt', 'fa_mean_rt', 'miss_mean_rt', 
     'hit_median_rt', 'fa_median_rt', 'miss_median_rt'])
     
     # storing practice data
     df = df._append({'Participant': stored_data['participant'], 'Session': 0, 'n_hits': stored_data['practice_hits'],
     'n_misses': stored_data['practice_miss'], 'n_falsealarms': stored_data['practice_fa'], 
-    'n_correctrejections': stored_data['practice_reject'], 'hit_mean_rt': PracHitMeanRt, 
+    'n_correctrejections': stored_data['practice_reject'],'hit_mean_rt': PracHitMeanRt, 
     'fa_mean_rt': PracFaMeanRt, 'miss_mean_rt': PracMissMeanRt, 'hit_median_rt': PracHitMedianRt, 'fa_median_rt': PracFaMedianRt,
     'miss_median_rt': PracMissMeanRt},ignore_index=True)
     
@@ -195,6 +154,7 @@ def save_data(stored_data):
     except Exception as e:
         print(f"Error saving data: {e}")
 
+# Function with the outline of the experiment
 def experiment(max_count, stored_data, is_practice):
     # setting the beginning variables
     count = 0
@@ -202,7 +162,6 @@ def experiment(max_count, stored_data, is_practice):
     second_index = 15
     hit_interval = 30
     clock = core.Clock()
-    #rt_list = []
     
     while count < max_count: #runs as long as specified in function parameter
         i = count % hit_interval # Current index (0-29) in this set of 30
@@ -273,10 +232,10 @@ def experiment(max_count, stored_data, is_practice):
                 # if conditional to tell if its practice
                 if max_count == max_count_practice:
                     stored_data['practice_hits'] += 1
-                    stored_data['practice_hit_mean_rt'].append(response_time_ms)
+                    stored_data['practice_hit_rt'].append(response_time_ms)
                 if max_count == max_count_experiment:
                     stored_data['main_hits'] += 1
-                    stored_data['main_hit_mean_rt'].append(response_time_ms)
+                    stored_data['main_hit_rt'].append(response_time_ms)
 
             else:
                 if is_practice:
@@ -288,12 +247,11 @@ def experiment(max_count, stored_data, is_practice):
                     
                 if max_count == max_count_practice:
                     stored_data['practice_fa'] += 1
-                    stored_data['practice_fa_mean_rt'].append(response_time_ms)
+                    stored_data['practice_fa_rt'].append(response_time_ms)
                 if max_count == max_count_experiment:
                     stored_data['main_fa'] += 1
-                    stored_data['main_fa_mean_rt'].append(response_time_ms)
+                    stored_data['main_fa_rt'].append(response_time_ms)
             
-
             # Display feedback
             text.text = feedback_text
             text.draw()
@@ -302,6 +260,7 @@ def experiment(max_count, stored_data, is_practice):
 
         else:
             # Was it a correct rejection?
+            response_time_ms = None
             if is_critical(digit, next_digit):
                 if is_practice:
                     feedback_text = "Miss ❌"
@@ -312,14 +271,17 @@ def experiment(max_count, stored_data, is_practice):
                     
                 if max_count == max_count_practice:
                     stored_data['practice_miss'] += 1
-                    stored_data['practice_miss_mean_rt'].append(response_time_ms)
+                    if response_time_ms is not None:
+                        stored_data['practice_miss_rt'].append(response_time_ms)
                 if max_count == max_count_experiment:
                     stored_data['main_miss'] += 1
-                    stored_data['main_miss_mean_rt'].append(response_time_ms)
+                    if response_time_ms is not None:
+                        stored_data['main_miss_rt'].append(response_time_ms)
 
             else:
                 feedback_text = "+"
                 text.color = 'white'
+                
                 if max_count == max_count_practice:
                     stored_data['practice_reject'] += 1
                 if max_count == max_count_experiment:
@@ -336,7 +298,54 @@ def experiment(max_count, stored_data, is_practice):
         event.getKeys(keyList=['space'], timeStamped=True)
 
 
-#-------------[Start At Screens 1-3]-------------#
+#-------------[Declaring Variables]-------------#
+
+# Create a window
+win = visual.Window([1500,800], monitor="testMonitor", units="deg")
+
+# Create text stimuli
+text = visual.TextStim(win, height = 3)
+
+# Screen buttons/texts
+text_screen0 = visual.TextStim(win, text='Enter participant number:', height=1, color='black', pos=(0,5))
+text_screen1 = visual.TextStim(win, text='Insert instructions here.', height=1, color='black', pos=(0,5))
+text_screen2 = visual.TextStim(win, text='Insert task details here.', height = 1, color='black', pos=(0,5))
+text_screen3 = visual.TextStim(win, text='Are you ready to begin a practice run? Click "next" to begin the task.', height = 1, color='black', pos=(0,5))
+text_screen4 = visual.TextStim(win, text='You have completed the practice run, you will now complete the entire task.', height = 1, color='black', pos=(0,5))
+text_screen5 = visual.TextStim(win, text='Are you ready to begin the task? Click "next" to begin the task.', height = 1, color='black', pos=(0,5))
+text_screen6 = visual.TextStim(win, text='You have completed the task, good job! Thank you for participating!', height = 1, color='black', pos=(0,5))
+
+# Time for each experiment session
+max_count_practice = 150 # 5 minutes
+max_count_experiment = 1800 # 60 minutes
+
+# Data to save
+stored_data = {
+    'participant': 0,
+    
+    'practice_count': 0,
+    'practice_hits': 0,    
+    'practice_miss': 0,     
+    'practice_fa': 0,    
+    'practice_reject': 0,
+    'practice_hit_rt': [],
+    'practice_fa_rt': [],
+    'practice_miss_rt': [],
+    
+    'main_count': 0,
+    'main_hits': 0,
+    'main_miss': 0,
+    'main_fa': 0,
+    'main_reject': 0,
+    'main_hit_rt': [],
+    'main_fa_rt': [],
+    'main_miss_rt': []
+}
+
+
+#-------------[The Actual Experiment Process Below]-------------#
+
+#---[Start At Screens 1-3]---#
 
 current = 0
 
@@ -361,13 +370,13 @@ while current <= 5:
     elif action == 'next':
         current += 1
 
-#-------------[Practice Experiment Loop]-------------#
+#---[Practice Experiment Loop]---#
 
 if action == 'start_task':
     experiment(max_count_practice, stored_data, True)
     
 
-#-------------[Continue To Screens 4-5]-------------#
+#---[Continue To Screens 4-5]---#
 
 current = 4
 
@@ -386,7 +395,7 @@ while current <= 5:
         current+= 1
 
 
-#-------------[Main Experiment Loop]-------------#
+#---[Main Experiment Loop]---#
 
 if action == 'start_task':
     experiment(max_count_experiment, stored_data, False)
