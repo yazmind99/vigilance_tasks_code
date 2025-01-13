@@ -110,6 +110,8 @@ def save_data(stored_data):
     MainFaMedianRt = 0
     MainMissMedianRt = 0
     
+    
+    
     if len(stored_data['practice_hit_rt']) != 0:
         PracHitMeanRt = statistics.mean(stored_data['practice_hit_rt'])
         PracHitMedianRt = statistics.median(stored_data['practice_hit_rt'])
@@ -137,14 +139,16 @@ def save_data(stored_data):
     # storing practice data
     df = df._append({'Participant': stored_data['participant'], 'Session': 0, 'n_hits': stored_data['practice_hits'],
     'n_misses': stored_data['practice_miss'], 'n_falsealarms': stored_data['practice_fa'], 
-    'n_correctrejections': stored_data['practice_reject'],'hit_mean_rt': PracHitMeanRt, 
+    'n_correctrejections': stored_data['practice_reject'], 'n_misses_isi': len(stored_data['practice_miss_rt']),
+    'n_falsealarms_isi': stored_data['practice_fa_isi'], 'hit_mean_rt': PracHitMeanRt, 
     'fa_mean_rt': PracFaMeanRt, 'miss_mean_rt': PracMissMeanRt, 'hit_median_rt': PracHitMedianRt, 'fa_median_rt': PracFaMedianRt,
     'miss_median_rt': PracMissMeanRt},ignore_index=True)
     
     # storing main data
     df = df._append({'Participant': stored_data['participant'], 'Session': 1, 'n_hits': stored_data['main_hits'],
     'n_misses': stored_data['main_miss'], 'n_falsealarms': stored_data['main_fa'], 
-    'n_correctrejections': stored_data['main_reject'], 'hit_mean_rt': MainHitMeanRt, 
+    'n_correctrejections': stored_data['main_reject'], 'n_misses_isi': len(stored_data['main_miss_rt']),
+    'n_falsealarms_isi': stored_data['main_fa_isi'], 'hit_mean_rt': MainHitMeanRt, 
     'fa_mean_rt': MainFaMeanRt, 'miss_mean_rt': MainMissMeanRt, 'hit_median_rt': MainHitMedianRt, 'fa_median_rt': MainFaMedianRt,
     'miss_median_rt': MainMissMedianRt},ignore_index=True)
     
@@ -294,8 +298,29 @@ def experiment(max_count, stored_data, is_practice):
         
         text.bold = False
         
-        # Clear keyList to ignore accidental key presses during the ISI
-        event.getKeys(keyList=['space'], timeStamped=True)
+        
+        # Check for ISI keyboard input
+        keys = event.getKeys(keyList=['space'], timeStamped=clock)
+        if keys:
+            isi_response_time = keys[0][1]               # seconds
+            isi_response_time_ms = isi_response_time * 1000  # milliseconds
+            
+            print(isi_response_time_ms)
+            
+            # Check if the response is correct or incorrect
+            if is_critical(digit, next_digit):
+                # is it practice?
+                if max_count == max_count_practice:
+                    stored_data['practice_miss_rt'].append(isi_response_time_ms)
+                if max_count == max_count_experiment:
+                    stored_data['main_miss_rt'].append(isi_response_time_ms)
+
+            else:
+                # is it practice?
+                if max_count == max_count_practice:
+                    stored_data['practice_fa_isi'] += 1
+                if max_count == max_count_experiment:
+                    stored_data['main_fa_isi'] += 1 
 
 
 #-------------[Declaring Variables]-------------#
@@ -316,8 +341,8 @@ text_screen5 = visual.TextStim(win, text='Are you ready to begin the task? Click
 text_screen6 = visual.TextStim(win, text='You have completed the task, good job! Thank you for participating!', height = 1, color='black', pos=(0,5))
 
 # Time for each experiment session
-max_count_practice = 150 # 5 minutes
-max_count_experiment = 1800 # 60 minutes
+max_count_practice = 15 #150 # 5 minutes
+max_count_experiment = 10 #1800 # 60 minutes
 
 # Data to save
 stored_data = {
@@ -326,7 +351,8 @@ stored_data = {
     'practice_count': 0,
     'practice_hits': 0,    
     'practice_miss': 0,     
-    'practice_fa': 0,    
+    'practice_fa': 0,
+    'practice_fa_isi': 0,
     'practice_reject': 0,
     'practice_hit_rt': [],
     'practice_fa_rt': [],
@@ -336,6 +362,7 @@ stored_data = {
     'main_hits': 0,
     'main_miss': 0,
     'main_fa': 0,
+    'main_fa_isi': 0,
     'main_reject': 0,
     'main_hit_rt': [],
     'main_fa_rt': [],
