@@ -214,6 +214,8 @@ def experiment(max_count, stored_data, is_practice):
         win.flip()
         clock.reset()
         core.wait(1)
+        
+        hit_already = False
 
         # Check for keyboard input
         keys = event.getKeys(keyList=['space'], timeStamped=clock)
@@ -240,6 +242,8 @@ def experiment(max_count, stored_data, is_practice):
                 if max_count == max_count_experiment:
                     stored_data['main_hits'] += 1
                     stored_data['main_hit_rt'].append(response_time_ms)
+                    
+                hit_already = True
 
             else:
                 if is_practice:
@@ -301,7 +305,7 @@ def experiment(max_count, stored_data, is_practice):
         
         # Check for ISI keyboard input
         keys = event.getKeys(keyList=['space'], timeStamped=clock)
-        if keys:
+        if keys and not hit_already:
             isi_response_time = keys[0][1]               # seconds
             isi_response_time_ms = isi_response_time * 1000  # milliseconds
             
@@ -341,8 +345,8 @@ text_screen5 = visual.TextStim(win, text='Are you ready to begin the task? Click
 text_screen6 = visual.TextStim(win, text='You have completed the task, good job! Thank you for participating!', height = 1, color='black', pos=(0,5))
 
 # Time for each experiment session
-max_count_practice = 15 #150 # 5 minutes
-max_count_experiment = 10 #1800 # 60 minutes
+max_count_practice = 30 #150 # 5 minutes
+max_count_experiment = 31 #1800 # 60 minutes
 
 # Data to save
 stored_data = {
