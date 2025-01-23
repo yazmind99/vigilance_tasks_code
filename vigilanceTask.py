@@ -90,7 +90,7 @@ def screen_changer(screen_text, button1_check = None, button1_action='previous',
             return button2_action
 
 # Function that saves the data
-def save_data(stored_data, is_practice):
+def save_data(stored_data, is_practice, block):
     script_dir = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(script_dir, "experiment_data.csv")
     
@@ -130,13 +130,13 @@ def save_data(stored_data, is_practice):
         MainMissMeanRt = statistics.mean(stored_data['main_miss_rt'])
         MainMissMedianRt = statistics.median(stored_data['main_miss_rt'])
         
-    new_practice_row = {'Participant': stored_data['participant'], 'Session': 0, 'n_hits': stored_data['practice_hits'],
+    new_practice_row = {'Participant': stored_data['participant'], 'Session': 0, 'Block': block, 'n_hits': stored_data['practice_hits'],
             'n_misses': stored_data['practice_miss'], 'n_falsealarms': stored_data['practice_fa'], 
             'n_correctrejections': stored_data['practice_reject'], 'n_misses_isi': len(stored_data['practice_miss_rt']),
             'n_falsealarms_isi': stored_data['practice_fa_isi'], 'hit_mean_rt': PracHitMeanRt, 
             'fa_mean_rt': PracFaMeanRt, 'miss_mean_rt': PracMissMeanRt, 'hit_median_rt': PracHitMedianRt, 'fa_median_rt': PracFaMedianRt,
             'miss_median_rt': PracMissMeanRt}
-    new_main_row = {'Participant': stored_data['participant'], 'Session': 1, 'n_hits': stored_data['main_hits'],
+    new_main_row = {'Participant': stored_data['participant'], 'Session': 1, 'Block': block, 'n_hits': stored_data['main_hits'],
         'n_misses': stored_data['main_miss'], 'n_falsealarms': stored_data['main_fa'], 
         'n_correctrejections': stored_data['main_reject'], 'n_misses_isi': len(stored_data['main_miss_rt']),
         'n_falsealarms_isi': stored_data['main_fa_isi'], 'hit_mean_rt': MainHitMeanRt, 
@@ -168,7 +168,7 @@ def save_data(stored_data, is_practice):
         print(f"Error saving data: {e}")
             
 # Function with the outline of the experiment
-def experiment(max_count, stored_data, is_practice):
+def experiment(max_count, stored_data, is_practice, block):
     # setting the beginning variables
     count = 0
     first_index = 0
@@ -335,8 +335,8 @@ def experiment(max_count, stored_data, is_practice):
                 if max_count == max_count_experiment:
                     stored_data['main_fa_isi'] += 1 
         
-        if count % 5 == 0:
-            save_data(stored_data, is_practice)
+        if count % 150 == 0:
+            save_data(stored_data, is_practice, block)
             stored_data['practice_hits'] = 0
             stored_data['practice_miss'] = 0
             stored_data['practice_fa'] = 0
@@ -354,6 +354,10 @@ def experiment(max_count, stored_data, is_practice):
             stored_data['main_hit_rt'].clear()
             stored_data['main_fa_rt'].clear()
             stored_data['main_miss_rt'].clear()
+            
+            block += 1
+            
+    return block
             
 #-------------[Declaring Variables]-------------#
 
@@ -377,8 +381,8 @@ text_screen6 = visual.TextStim(win, text='You have completed the task, good job!
       30 counts = 1 minute
       15 counts = 30 seconds
       1 count = 2 seconds '''
-max_count_practice = 10 # 20 seconds 
-max_count_experiment = 15 # 30 seconds 
+max_count_practice = 150 # 5 minutes 
+max_count_experiment = 900 # 30 minutes 
 
 # Data to save
 stored_data = {
@@ -436,7 +440,7 @@ while current <= 5:
 #---[Practice Experiment Loop]---#
 
 if action == 'start_task':
-    experiment(max_count_practice, stored_data, True)
+    experiment(max_count_practice, stored_data, True, 0)
     
 
 #---[Continue To Screens 4-5]---#
@@ -461,7 +465,7 @@ while current <= 5:
 #---[Main Experiment Loop]---#
 
 if action == 'start_task':
-    experiment(max_count_experiment, stored_data, False)
+    experiment(max_count_experiment, stored_data, False, 1)
 
 current = 6
 
