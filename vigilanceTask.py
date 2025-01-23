@@ -90,7 +90,7 @@ def screen_changer(screen_text, button1_check = None, button1_action='previous',
             return button2_action
 
 # Function that saves the data
-def save_data(stored_data):
+def save_data(stored_data, is_practice):
     script_dir = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(script_dir, "experiment_data.csv")
     
@@ -109,8 +109,6 @@ def save_data(stored_data):
     MainHitMedianRt = 0
     MainFaMedianRt = 0
     MainMissMedianRt = 0
-    
-    
     
     if len(stored_data['practice_hit_rt']) != 0:
         PracHitMeanRt = statistics.mean(stored_data['practice_hit_rt'])
@@ -131,33 +129,44 @@ def save_data(stored_data):
     if len(stored_data['main_miss_rt']) != 0:
         MainMissMeanRt = statistics.mean(stored_data['main_miss_rt'])
         MainMissMedianRt = statistics.median(stored_data['main_miss_rt'])
+        
+    new_practice_row = {'Participant': stored_data['participant'], 'Session': 0, 'n_hits': stored_data['practice_hits'],
+            'n_misses': stored_data['practice_miss'], 'n_falsealarms': stored_data['practice_fa'], 
+            'n_correctrejections': stored_data['practice_reject'], 'n_misses_isi': len(stored_data['practice_miss_rt']),
+            'n_falsealarms_isi': stored_data['practice_fa_isi'], 'hit_mean_rt': PracHitMeanRt, 
+            'fa_mean_rt': PracFaMeanRt, 'miss_mean_rt': PracMissMeanRt, 'hit_median_rt': PracHitMedianRt, 'fa_median_rt': PracFaMedianRt,
+            'miss_median_rt': PracMissMeanRt}
+    new_main_row = {'Participant': stored_data['participant'], 'Session': 1, 'n_hits': stored_data['main_hits'],
+        'n_misses': stored_data['main_miss'], 'n_falsealarms': stored_data['main_fa'], 
+        'n_correctrejections': stored_data['main_reject'], 'n_misses_isi': len(stored_data['main_miss_rt']),
+        'n_falsealarms_isi': stored_data['main_fa_isi'], 'hit_mean_rt': MainHitMeanRt, 
+        'fa_mean_rt': MainFaMeanRt, 'miss_mean_rt': MainMissMeanRt, 'hit_median_rt': MainHitMedianRt, 'fa_median_rt': MainFaMedianRt,
+        'miss_median_rt': MainMissMedianRt}
+    new_row = 0
     
-    df = pd.DataFrame(columns=['Participant', 'Session', 'n_hits', 'n_misses', 'n_falsealarms', 
-    'n_correctrejections', 'hit_mean_rt', 'fa_mean_rt', 'miss_mean_rt', 
-    'hit_median_rt', 'fa_median_rt', 'miss_median_rt'])
-    
-    # storing practice data
-    df = df._append({'Participant': stored_data['participant'], 'Session': 0, 'n_hits': stored_data['practice_hits'],
-    'n_misses': stored_data['practice_miss'], 'n_falsealarms': stored_data['practice_fa'], 
-    'n_correctrejections': stored_data['practice_reject'], 'n_misses_isi': len(stored_data['practice_miss_rt']),
-    'n_falsealarms_isi': stored_data['practice_fa_isi'], 'hit_mean_rt': PracHitMeanRt, 
-    'fa_mean_rt': PracFaMeanRt, 'miss_mean_rt': PracMissMeanRt, 'hit_median_rt': PracHitMedianRt, 'fa_median_rt': PracFaMedianRt,
-    'miss_median_rt': PracMissMeanRt},ignore_index=True)
-    
-    # storing main data
-    df = df._append({'Participant': stored_data['participant'], 'Session': 1, 'n_hits': stored_data['main_hits'],
-    'n_misses': stored_data['main_miss'], 'n_falsealarms': stored_data['main_fa'], 
-    'n_correctrejections': stored_data['main_reject'], 'n_misses_isi': len(stored_data['main_miss_rt']),
-    'n_falsealarms_isi': stored_data['main_fa_isi'], 'hit_mean_rt': MainHitMeanRt, 
-    'fa_mean_rt': MainFaMeanRt, 'miss_mean_rt': MainMissMeanRt, 'hit_median_rt': MainHitMedianRt, 'fa_median_rt': MainFaMedianRt,
-    'miss_median_rt': MainMissMedianRt},ignore_index=True)
+    if is_practice:
+        new_row = new_practice_row
+    else:
+        new_row = new_main_row
     
     try:
+        # Check if the file exists
+        if os.path.exists(file_path):
+            # Read existing data
+            df = pd.read_csv(file_path)
+        else:
+            # Create an empty DataFrame with the same structure
+            df = pd.DataFrame(columns=new_row.keys())
+        
+        # Append the new row
+        df = df._append(new_row, ignore_index=True)
+        
+        # Save the updated DataFrame back to the file
         df.to_csv(file_path, index=False)
         print(f"Data successfully saved to: {file_path}")
     except Exception as e:
         print(f"Error saving data: {e}")
-
+            
 # Function with the outline of the experiment
 def experiment(max_count, stored_data, is_practice):
     # setting the beginning variables
@@ -325,8 +334,27 @@ def experiment(max_count, stored_data, is_practice):
                     stored_data['practice_fa_isi'] += 1
                 if max_count == max_count_experiment:
                     stored_data['main_fa_isi'] += 1 
-
-
+        
+        if count % 5 == 0:
+            save_data(stored_data, is_practice)
+            stored_data['practice_hits'] = 0
+            stored_data['practice_miss'] = 0
+            stored_data['practice_fa'] = 0
+            stored_data['practice_fa_isi'] = 0
+            stored_data['practice_reject'] = 0
+            stored_data['practice_hit_rt'].clear()
+            stored_data['practice_fa_rt'].clear()
+            stored_data['practice_miss_rt'].clear()
+            
+            stored_data['main_hits'] = 0
+            stored_data['main_miss'] = 0
+            stored_data['main_fa'] = 0
+            stored_data['main_fa_isi'] = 0
+            stored_data['main_reject'] = 0
+            stored_data['main_hit_rt'].clear()
+            stored_data['main_fa_rt'].clear()
+            stored_data['main_miss_rt'].clear()
+            
 #-------------[Declaring Variables]-------------#
 
 # Create a window
@@ -345,8 +373,12 @@ text_screen5 = visual.TextStim(win, text='Are you ready to begin the task? Click
 text_screen6 = visual.TextStim(win, text='You have completed the task, good job! Thank you for participating!', height = 1, color='black', pos=(0,5))
 
 # Time for each experiment session
-max_count_practice = 30 #150 # 5 minutes
-max_count_experiment = 31 #1800 # 60 minutes
+''' For Yessenia bc she keeps forgetting:
+      30 counts = 1 minute
+      15 counts = 30 seconds
+      1 count = 2 seconds '''
+max_count_practice = 10 # 20 seconds 
+max_count_experiment = 15 # 30 seconds 
 
 # Data to save
 stored_data = {
@@ -430,8 +462,6 @@ while current <= 5:
 
 if action == 'start_task':
     experiment(max_count_experiment, stored_data, False)
-     
-save_data(stored_data)
 
 current = 6
 
