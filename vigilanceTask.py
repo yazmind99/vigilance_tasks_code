@@ -471,4 +471,3 @@ while current == 6:
     if action == 'next':
         win.close()
         core.quit()
-        
