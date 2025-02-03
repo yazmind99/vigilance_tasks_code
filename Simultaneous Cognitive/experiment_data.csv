@@ -1,0 +1,7 @@
+Participant,Session,Block,n_hits,n_misses,n_falsealarms,n_correctrejections,n_misses_isi,n_falsealarms_isi,hit_mean_rt,fa_mean_rt,miss_mean_rt,hit_median_rt,fa_median_rt,miss_median_rt
+4,0,0,0,0,0,10,0,0,0,0,0,0,0,0
+4,1,0,2,0,0,8,0,0,550.2883,0,0,550.2883,0,0
+4,1,1,0,0,0,10,0,0,0,0,0,0,0,0
+3,0,0,0,0,0,10,0,0,0,0,0,0,0,0
+3,1,1,2,0,0,8,0,0,721.4937,0,0,721.4937,0,0
+3,1,2,0,0,0,10,0,0,0,0,0,0,0,0

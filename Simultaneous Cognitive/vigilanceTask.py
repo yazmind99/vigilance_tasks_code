@@ -171,8 +171,7 @@ def save_data(stored_data, is_practice, block):
 def experiment(max_count, stored_data, is_practice, block):
     # setting the beginning variables
     count = 0
-    first_index = 0
-    second_index = 15
+    critical_index = 15
     hit_interval = 30
     clock = core.Clock()
     
@@ -181,19 +180,14 @@ def experiment(max_count, stored_data, is_practice, block):
         
         # Generate indecies every 30 numbers
         if i == 0:
-            first_index = index_generator()
-            second_index = index_generator()
-            
-            # Regenerate second_index if indecies are equal by chance
-            while first_index == second_index:
-                second_index = index_generator()
+            critical_index = index_generator()
         
         # Generate random double digits
         digit = generate_digit()
         next_digit = generate_digit()
         
         # If a critical signal is needed, regenerate next_digit until it's critical
-        if (i == first_index or i == second_index):
+        if (i == critical_index):
             while(not is_critical(digit, next_digit)):
                 next_digit = generate_digit()
                 
