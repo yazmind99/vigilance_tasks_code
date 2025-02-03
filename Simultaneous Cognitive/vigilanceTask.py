@@ -92,8 +92,8 @@ def screen_changer(screen_text, button1_check = None, button1_action='previous',
 # Function that saves the data
 def save_data(stored_data, is_practice, block):
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(script_dir, "experiment_data.csv")
-    
+    file_path_long = os.path.join(script_dir, f"participant{stored_data['participant']}_experiment_data_long.csv")
+
     PracHitMeanRt = 0
     PracFaMeanRt = 0
     PracMissMeanRt = 0
@@ -129,7 +129,7 @@ def save_data(stored_data, is_practice, block):
     if len(stored_data['main_miss_rt']) != 0:
         MainMissMeanRt = statistics.mean(stored_data['main_miss_rt'])
         MainMissMedianRt = statistics.median(stored_data['main_miss_rt'])
-        
+         
     new_practice_row = {'Participant': stored_data['participant'], 'Session': 0, 'Block': block, 'n_hits': stored_data['practice_hits'],
             'n_misses': stored_data['practice_miss'], 'n_falsealarms': stored_data['practice_fa'], 
             'n_correctrejections': stored_data['practice_reject'], 'n_misses_isi': len(stored_data['practice_miss_rt']),
@@ -148,12 +148,11 @@ def save_data(stored_data, is_practice, block):
         new_row = new_practice_row
     else:
         new_row = new_main_row
-    
     try:
         # Check if the file exists
-        if os.path.exists(file_path):
+        if os.path.exists(file_path_long):
             # Read existing data
-            df = pd.read_csv(file_path)
+            df = pd.read_csv(file_path_long)
         else:
             # Create an empty DataFrame with the same structure
             df = pd.DataFrame(columns=new_row.keys())
@@ -162,8 +161,8 @@ def save_data(stored_data, is_practice, block):
         df = df._append(new_row, ignore_index=True)
         
         # Save the updated DataFrame back to the file
-        df.to_csv(file_path, index=False)
-        print(f"Data successfully saved to: {file_path}")
+        df.to_csv(file_path_long, index=False)
+        print(f"Data successfully saved to: {file_path_long}")
     except Exception as e:
         print(f"Error saving data: {e}")
             
